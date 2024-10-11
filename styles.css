@@ -105,8 +105,14 @@ body {
     }
 
     .scroll-container .card {
-        width: 70%; /* Регулируйте для мобильного вида */
+        width: 100%; /* Сделано, чтобы сохранить размер карточек на мобильных устройствах */
+        aspect-ratio: 2 / 1; /* Сохранение соотношения сторон */
     }
+
+    .exit-button {
+        font-size: 1em;
+    }
+}
 
     .exit-button {
         font-size: 1em;
