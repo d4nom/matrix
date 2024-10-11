@@ -5,41 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://d4nom.github.io/matrix/styles.css">
     <title>Matrix App</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Скрываем прокрутку */
+        }
+        .container {
+            transform-origin: top left; /* Точка масштабирования — верхний левый угол */
+            transition: transform 0.3s ease; /* Плавный переход для масштабирования */
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <!-- Карточка конструктора рутины (соотношение 2:1) -->
+        <!-- Карточки и кнопка "Выход из Матрицы" -->
         <div class="card">
             <img src="https://d4nom.github.io/matrix/pic/rutina.png" alt="Конструктор рутины">
         </div>
 
-        <!-- Горизонтально прокручиваемый контейнер для карточек -->
         <div class="scroll-container">
-            <!-- Карточка трекера привычек (соотношение 1:1) -->
             <div class="card">
                 <img src="https://d4nom.github.io/matrix/pic/tracker.png" alt="Трекер привычек">
             </div>
 
-            <!-- Карточка с таблицей лидеров (соотношение 1:1) -->
             <div class="card">
                 <img src="https://d4nom.github.io/matrix/pic/leader.png" alt="Лидеры">
             </div>
         </div>
 
-        <!-- Кнопка выхода из матрицы (соотношение 1:1) -->
         <div class="exit-button">
             <img src="https://d4nom.github.io/matrix/pic/exit.png" alt="Выйти из Матрицы">
         </div>
     </div>
 
+    <!-- JavaScript для динамического масштабирования контента -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            if (document.body.scrollHeight <= window.innerHeight) {
-                document.body.style.overflow = "hidden"; // отключаем прокрутку, если весь контент умещается
-            }
-        });
+        function adjustScale() {
+            const container = document.querySelector('.container');
+            const scaleX = window.innerWidth / container.offsetWidth;
+            const scaleY = window.innerHeight / container.offsetHeight;
+
+            // Берем минимальный коэффициент, чтобы весь контент умещался по обеим осям
+            const scale = Math.min(scaleX, scaleY);
+
+            // Применяем масштабирование к контейнеру
+            container.style.transform = `scale(${scale})`;
+        }
+
+        // Вызываем функцию при загрузке страницы и изменении размеров окна
+        window.addEventListener('load', adjustScale);
+        window.addEventListener('resize', adjustScale);
     </script>
-    
-    
 </body>
 </html>
