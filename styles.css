@@ -10,7 +10,10 @@ body {
     margin: 0;
 }
 
+
 .container {
+    transform: scale(0.8); /* Масштабируем весь контейнер до 90% от его исходного размера */
+    transform-origin: top; /* Масштабирование происходит от верхней части страницы */
     width: 80%;
     max-width: 1000px;
     padding: 20px;
