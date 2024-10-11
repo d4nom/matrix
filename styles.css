@@ -1,27 +1,87 @@
+/* Основной стиль для фона и структуры */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
+    background-color: #000;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
 }
 
-#app {
-    background: white;
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 80%;
+    max-width: 1000px;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-button {
-    margin-top: 20px;
-    padding: 10px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 4px;
+.card {
+    background-color: #111;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.8);
+}
+
+.card img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.card-title {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    font-size: 1.5em;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+}
+
+/* Кнопка выхода из матрицы */
+.exit-button {
+    grid-column: span 2;
+    background-color: #222;
+    border: 2px solid #ff0000;
+    border-radius: 15px;
+    color: #ff0000;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 15px;
+    text-align: center;
     cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.exit-button:hover {
+    background-color: #ff0000;
+    color: #000;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 600px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    .card-title {
+        font-size: 1.2em;
+    }
+
+    .exit-button {
+        font-size: 1em;
+    }
 }
