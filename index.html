@@ -31,6 +31,14 @@
             <img src="https://d4nom.github.io/matrix/pic/exit.png" alt="Выйти из Матрицы">
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (document.body.scrollHeight <= window.innerHeight) {
+                document.body.style.overflow = "hidden"; // отключаем прокрутку, если весь контент умещается
+            }
+        });
+    </script>
     
     
 </body>
