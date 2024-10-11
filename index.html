@@ -24,7 +24,10 @@
     </style>
 </head>
 
-<script> Telegram.WebApp.expand(); </script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+    Telegram.WebApp.expand();
+</script>
     
 <body>
     <div class="container">
@@ -65,10 +68,6 @@
         // Вызываем функцию при загрузке страницы и изменении размеров окна
         window.addEventListener('load', adjustScale);
         window.addEventListener('resize', adjustScale);
-
-        // Расширяем приложение на весь экран
-        Telegram.WebApp.ready(); // Сначала инициализируем
-        Telegram.WebApp.expand(); // Переключаемся на полноэкранный режим
     </script>
 </body>
 </html>
