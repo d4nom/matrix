@@ -58,7 +58,7 @@ body {
 
 .scroll-container .card {
     flex: none;
-    width: 120%;
+    width: 100%;
     height: auto;
     margin-right: 20px;
     overflow: hidden;
@@ -105,24 +105,16 @@ body {
     }
 
     .scroll-container .card {
-        flex: none;
-        width: 120%;
+        width: 100%; /* Оставляем размер карточек на мобильных устройствах таким же, как на ПК */
+        aspect-ratio: 2 / 1;
+    }
+
+    .exit-button {
+        font-size: 1em;
+        aspect-ratio: 1 / 1;
+        width: 100%;
         height: auto;
-        margin-right: 20px;
-        aspect-ratio: 2 / 1; /* Сохранение соотношения сторон */
-    }
-
-    .exit-button {
-        font-size: 1em;
-    }
-}
-
-    .exit-button {
-        font-size: 1em;
-    }
-}
-
-    .exit-button {
-        font-size: 1em;
+        overflow: hidden;
+        padding: 15px; /* Убираем лишние выступы */
     }
 }
