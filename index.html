@@ -10,9 +10,15 @@
             margin: 0;
             padding: 0;
             overflow: hidden; /* Скрываем прокрутку */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Высота равна всей видимой области экрана */
+            width: 100vw; /* Ширина равна всей видимой области экрана */
         }
+
         .container {
-            transform-origin: top left; /* Точка масштабирования — верхний левый угол */
+            transform-origin: center; /* Точка масштабирования — центр контейнера */
             transition: transform 0.3s ease; /* Плавный переход для масштабирования */
         }
     </style>
@@ -39,7 +45,7 @@
         </div>
     </div>
 
-    <!-- JavaScript для динамического масштабирования контента -->
+    <!-- JavaScript для динамического масштабирования контента и центрирования -->
     <script>
         function adjustScale() {
             const container = document.querySelector('.container');
