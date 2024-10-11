@@ -3,15 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini App - Routine Tracker</title>
     <link rel="stylesheet" href="styles.css">
+    <title>Matrix App</title>
 </head>
 <body>
-    <div id="app">
-        <h1>Моя рутина</h1>
-        <ul id="routine-list"></ul>
-        <button onclick="sendDataToBot()">Отправить данные боту</button>
+    <div class="container">
+        <!-- Карточка конструктора рутины -->
+        <div class="card">
+            <img src="routine_constructor.jpg" alt="Конструктор рутины">
+            <div class="card-title">Конструктор рутины</div>
+        </div>
+        
+        <!-- Карточка трекера привычек -->
+        <div class="card">
+            <img src="habit_tracker.jpg" alt="Трекер привычек">
+            <div class="card-title">Трекер привычек</div>
+        </div>
+        
+        <!-- Карточка с таблицей лидеров -->
+        <div class="card">
+            <img src="leaderboard.jpg" alt="Лидеры">
+            <div class="card-title">Лидеры</div>
+        </div>
+        
+        <!-- Кнопка выхода из матрицы -->
+        <div class="exit-button">Выйти из Матрицы</div>
     </div>
-    <script src="app.js"></script>
 </body>
 </html>
