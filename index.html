@@ -62,6 +62,10 @@
         // Вызываем функцию при загрузке страницы и изменении размеров окна
         window.addEventListener('load', adjustScale);
         window.addEventListener('resize', adjustScale);
+
+        // Расширяем приложение на весь экран
+        Telegram.WebApp.ready(); // Сначала инициализируем
+        Telegram.WebApp.expand(); // Переключаемся на полноэкранный режим
     </script>
 </body>
 </html>
