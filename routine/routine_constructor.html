@@ -169,8 +169,8 @@
         </div>
         <!-- Индикаторы текущей карточки -->
         <div class="indicators" id="indicators">
-            <div class="indicator active" data-index="0"></div>
-            <div class="indicator" data-index="1"></div>
+            <div class="indicator" data-index="0"></div>
+            <div class="indicator active" data-index="1"></div>
             <div class="indicator" data-index="2"></div>
         </div>
         <div class="button-container">
@@ -185,7 +185,7 @@
             const indicators = document.querySelectorAll('.indicator');
             const actionButton = document.getElementById('actionButton');
 
-            let activeIndex = 0;
+            let activeIndex = 1;
 
             // Функция для клонирования карточек в начало или конец при достижении края прокрутки
             const cloneCards = (position) => {
@@ -262,6 +262,7 @@
             });
 
             // Инициализация активной карточки
+            cards[1].scrollIntoView({ behavior: 'auto', inline: 'center' }); // По умолчанию открываем вторую карточку
             determineActiveCard();
 
             // Обработчики кликов на индикаторы для перехода к соответствующим карточкам
