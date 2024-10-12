@@ -39,6 +39,7 @@
             scroll-behavior: smooth;
             /* Добавляем отступы слева и справа для центрирования первых и последних карточек */
             padding: 0 10px;
+            position: relative;
         }
 
         .card {
@@ -153,7 +154,6 @@
 <body>
     <div class="container">
         <div class="cards-wrapper" id="cardsWrapper">
-            <!-- Карточки будут дублироваться автоматически -->
             <div class="card" data-title="ЭКСПРЕСС">
                 <img src="https://via.placeholder.com/400x800.png?text=ЭКСПРЕСС" alt="ЭКСПРЕСС">
                 <div class="card-title">ЭКСПРЕСС</div>
@@ -186,6 +186,23 @@
             const actionButton = document.getElementById('actionButton');
 
             let activeIndex = 0;
+
+            // Функция для клонирования карточек в начало или конец при достижении края прокрутки
+            const cloneCards = (position) => {
+                const cardsArray = Array.from(cards);
+                cardsArray.forEach(card => {
+                    const clone = card.cloneNode(true);
+                    if (position === 'end') {
+                        cardsWrapper.appendChild(clone);
+                    } else {
+                        cardsWrapper.insertBefore(clone, cardsWrapper.firstChild);
+                    }
+                });
+            };
+
+            // Изначально клонируем карточки для плавности прокрутки
+            cloneCards('end');
+            cloneCards('start');
 
             // Функция для определения активной карточки
             const determineActiveCard = () => {
@@ -228,16 +245,18 @@
                 const currentCard = cards[index % cards.length];
                 const title = currentCard.getAttribute('data-title');
                 actionButton.textContent = `Настроить ${title} Рутину`;
-                // Здесь вы можете добавить дополнительные действия, например, изменение ссылок или открытие настроек
                 console.log(`Активная карточка: ${title}`);
             };
 
-            // Бесконечная прокрутка
+            // Бесконечная прокрутка с добавлением карточек в начало или конец
             cardsWrapper.addEventListener('scroll', () => {
-                if (cardsWrapper.scrollLeft + cardsWrapper.clientWidth >= cardsWrapper.scrollWidth) {
-                    cardsWrapper.scrollLeft = 1; // Возвращаемся к началу
-                } else if (cardsWrapper.scrollLeft === 0) {
-                    cardsWrapper.scrollLeft = cardsWrapper.scrollWidth - cardsWrapper.clientWidth - 1; // Переход к концу
+                if (cardsWrapper.scrollLeft + cardsWrapper.clientWidth >= cardsWrapper.scrollWidth - 50) {
+                    // Добавляем карточки в конец
+                    cloneCards('end');
+                } else if (cardsWrapper.scrollLeft <= 50) {
+                    // Добавляем карточки в начало
+                    cloneCards('start');
+                    cardsWrapper.scrollLeft += cardsWrapper.clientWidth; // Корректируем положение прокрутки
                 }
                 window.requestAnimationFrame(determineActiveCard);
             });
@@ -260,7 +279,6 @@
             actionButton.addEventListener('click', () => {
                 const currentCard = cards[activeIndex % cards.length];
                 const title = currentCard.getAttribute('data-title');
-                // Здесь вы можете добавить логику перехода к настройкам выбранной рутины
                 alert(`Переход к настройкам рутины: ${title}`);
             });
         });
