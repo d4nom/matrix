@@ -77,9 +77,12 @@
             });
         }
 
-        // Вызываем функцию при загрузке страницы и изменении размеров окна
-        window.addEventListener('load', adjustScale);
-        window.addEventListener('resize', adjustScale);
+        // Вызываем функции при загрузке страницы и изменении размеров окна
+    window.addEventListener('load', () => {
+        adjustScale();
+        enableHorizontalScrollWithWheel(); // Добавляем вызов функции
+    });
+    window.addEventListener('resize', adjustScale);
     </script>
 </body>
 </html>
