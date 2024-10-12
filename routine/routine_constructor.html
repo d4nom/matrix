@@ -42,6 +42,10 @@
             position: relative;
         }
 
+        .spacer {
+            flex: 0 0 15%; /* регулируй процентное значение в зависимости от размера заглушки */
+        }
+
         .card {
             flex: 0 0 auto; /* Не растягивать карточку */
             scroll-snap-align: center;
@@ -63,18 +67,18 @@
 
         /* Медиазапрос для десктопов */
         @media (min-width: 800px) {
-            .card {
-                width: 400px; /* Ширина карточки на десктопах */
-                max-width: none; /* Убираем ограничение на максимальную ширину */
-            }
-
             .container {
                 max-width: 1200px; /* Ограничиваем максимальную ширину контейнера */
                 margin: 0 auto;
             }
 
             .cards-wrapper {
-                padding: 0 50px; /* Увеличиваем отступы на десктопах для центрирования */
+                padding: 0 15%; /* Узкие края, чтобы выглядело как экран телефона */
+            }
+
+            .card {
+                width: 280px; /* Устанавливаем фиксированную ширину карточки для ПК */
+                max-width: none; /* Убираем ограничение на максимальную ширину */
             }
         }
 
@@ -154,6 +158,7 @@
 <body>
     <div class="container">
         <div class="cards-wrapper" id="cardsWrapper">
+            <div class="spacer"></div> <!-- левая заглушка -->
             <div class="card" data-title="ЭКСПРЕСС">
                 <img src="https://via.placeholder.com/400x800.png?text=ЭКСПРЕСС" alt="ЭКСПРЕСС">
                 <div class="card-title">ЭКСПРЕСС</div>
@@ -166,6 +171,7 @@
                 <img src="https://via.placeholder.com/400x800.png?text=РАСШИРЕННАЯ" alt="РАСШИРЕННАЯ">
                 <div class="card-title">РАСШИРЕННАЯ</div>
             </div>
+            <div class="spacer"></div> <!-- правая заглушка -->
         </div>
         <!-- Индикаторы текущей карточки -->
         <div class="indicators" id="indicators">
@@ -187,23 +193,6 @@
 
             let activeIndex = 1;
 
-            // Функция для клонирования карточек в начало или конец при достижении края прокрутки
-            const cloneCards = (position) => {
-                const cardsArray = Array.from(cards);
-                cardsArray.forEach(card => {
-                    const clone = card.cloneNode(true);
-                    if (position === 'end') {
-                        cardsWrapper.appendChild(clone);
-                    } else {
-                        cardsWrapper.insertBefore(clone, cardsWrapper.firstChild);
-                    }
-                });
-            };
-
-            // Изначально клонируем карточки для плавности прокрутки
-            cloneCards('end');
-            cloneCards('start');
-
             // Функция для определения активной карточки
             const determineActiveCard = () => {
                 const wrapperRect = cardsWrapper.getBoundingClientRect();
@@ -219,7 +208,7 @@
 
                     if (distance < minDistance) {
                         minDistance = distance;
-                        currentIndex = index % 3; // Циклический индекс
+                        currentIndex = index % cards.length; // Циклический индекс
                     }
                 });
 
@@ -248,23 +237,6 @@
                 console.log(`Активная карточка: ${title}`);
             };
 
-            // Бесконечная прокрутка с добавлением карточек в начало или конец
-            cardsWrapper.addEventListener('scroll', () => {
-                if (cardsWrapper.scrollLeft + cardsWrapper.clientWidth >= cardsWrapper.scrollWidth - 50) {
-                    // Добавляем карточки в конец
-                    cloneCards('end');
-                } else if (cardsWrapper.scrollLeft <= 50) {
-                    // Добавляем карточки в начало
-                    cloneCards('start');
-                    cardsWrapper.scrollLeft += cardsWrapper.clientWidth; // Корректируем положение прокрутки
-                }
-                window.requestAnimationFrame(determineActiveCard);
-            });
-
-            // Инициализация активной карточки
-            cards[1].scrollIntoView({ behavior: 'auto', inline: 'center' }); // По умолчанию открываем вторую карточку
-            determineActiveCard();
-
             // Обработчики кликов на индикаторы для перехода к соответствующим карточкам
             indicators.forEach(indicator => {
                 indicator.addEventListener('click', () => {
@@ -276,11 +248,20 @@
                 });
             });
 
+            // Инициализация активной карточки
+            cards[1].scrollIntoView({ behavior: 'auto', inline: 'center' }); // По умолчанию открываем вторую карточку
+            determineActiveCard();
+
             // Обработчик клика на кнопку
             actionButton.addEventListener('click', () => {
                 const currentCard = cards[activeIndex % cards.length];
                 const title = currentCard.getAttribute('data-title');
                 alert(`Переход к настройкам рутины: ${title}`);
+            });
+
+            // Обработчик прокрутки для определения активной карточки
+            cardsWrapper.addEventListener('scroll', () => {
+                window.requestAnimationFrame(determineActiveCard);
             });
         });
     </script>
