@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор Рутины</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden; /* Отключаем прокрутку всей страницы */
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* Высота контейнера равна высоте экрана */
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .cards-wrapper {
+            display: flex;
+            overflow-x: scroll;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            flex: 1 1 auto; /* Занимает доступное пространство */
+            width: 100%;
+            scroll-behavior: smooth;
+            /* Добавляем отступы слева и справа для центрирования первых и последних карточек */
+            padding: 0 10px;
+        }
+
+        .card {
+            flex: 0 0 auto; /* Не растягивать карточку */
+            scroll-snap-align: center;
+            background-color: #ffffff;
+            border-radius: 20px;
+            margin: 0 10px;
+            aspect-ratio: 1 / 2; /* Соотношение сторон 1:2 */
+            width: 80vw; /* Ширина карточки 80% от ширины окна просмотра */
+            max-width: 300px; /* Максимальная ширина карточки на мобильных */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        /* Медиазапрос для десктопов */
+        @media (min-width: 800px) {
+            .card {
+                width: 400px; /* Ширина карточки на десктопах */
+                max-width: none; /* Убираем ограничение на максимальную ширину */
+            }
+
+            .container {
+                max-width: 1200px; /* Ограничиваем максимальную ширину контейнера */
+                margin: 0 auto;
+            }
+
+            .cards-wrapper {
+                padding: 0 50px; /* Увеличиваем отступы на десктопах для центрирования */
+            }
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Изображение заполняет карточку, сохраняя соотношение сторон */
+            border-radius: 20px;
+        }
+
+        .card-title {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 18px;
+        }
+
+        .button-container {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .action-button {
+            background-color: #007BFF;
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Скрываем полосу прокрутки на большинстве браузеров */
+        .cards-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cards-wrapper {
+            -ms-overflow-style: none;  /* IE и Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* Индикаторы текущей карточки */
+        .indicators {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            background-color: #cccccc;
+            border-radius: 50%;
+            margin: 0 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .indicator.active {
+            background-color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="cards-wrapper" id="cardsWrapper">
+            <!-- Карточки будут дублироваться автоматически -->
+            <div class="card" data-title="ЭКСПРЕСС">
+                <img src="https://via.placeholder.com/400x800.png?text=ЭКСПРЕСС" alt="ЭКСПРЕСС">
+                <div class="card-title">ЭКСПРЕСС</div>
+            </div>
+            <div class="card" data-title="ОПТИМАЛЬНАЯ">
+                <img src="https://via.placeholder.com/400x800.png?text=ОПТИМАЛЬНАЯ" alt="ОПТИМАЛЬНАЯ">
+                <div class="card-title">ОПТИМАЛЬНАЯ</div>
+            </div>
+            <div class="card" data-title="РАСШИРЕННАЯ">
+                <img src="https://via.placeholder.com/400x800.png?text=РАСШИРЕННАЯ" alt="РАСШИРЕННАЯ">
+                <div class="card-title">РАСШИРЕННАЯ</div>
+            </div>
+        </div>
+        <!-- Индикаторы текущей карточки -->
+        <div class="indicators" id="indicators">
+            <div class="indicator active" data-index="0"></div>
+            <div class="indicator" data-index="1"></div>
+            <div class="indicator" data-index="2"></div>
+        </div>
+        <div class="button-container">
+            <button class="action-button" id="actionButton">Настроить Рутину</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cardsWrapper = document.getElementById('cardsWrapper');
+            const cards = document.querySelectorAll('.card');
+            const indicators = document.querySelectorAll('.indicator');
+            const actionButton = document.getElementById('actionButton');
+
+            let activeIndex = 0;
+
+            // Функция для определения активной карточки
+            const determineActiveCard = () => {
+                const wrapperRect = cardsWrapper.getBoundingClientRect();
+                const center = wrapperRect.left + wrapperRect.width / 2;
+
+                let minDistance = Infinity;
+                let currentIndex = 0;
+
+                cardsWrapper.querySelectorAll('.card').forEach((card, index) => {
+                    const cardRect = card.getBoundingClientRect();
+                    const cardCenter = cardRect.left + cardRect.width / 2;
+                    const distance = Math.abs(center - cardCenter);
+
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        currentIndex = index % 3; // Циклический индекс
+                    }
+                });
+
+                if (currentIndex !== activeIndex) {
+                    activeIndex = currentIndex;
+                    updateIndicators(activeIndex);
+                    updateActionButton(activeIndex);
+                }
+            };
+
+            // Функция для обновления индикаторов
+            const updateIndicators = (index) => {
+                indicators.forEach(indicator => {
+                    indicator.classList.remove('active');
+                });
+                if (indicators[index]) {
+                    indicators[index].classList.add('active');
+                }
+            };
+
+            // Функция для обновления действия кнопки в зависимости от активной карточки
+            const updateActionButton = (index) => {
+                const currentCard = cards[index % cards.length];
+                const title = currentCard.getAttribute('data-title');
+                actionButton.textContent = `Настроить ${title} Рутину`;
+                // Здесь вы можете добавить дополнительные действия, например, изменение ссылок или открытие настроек
+                console.log(`Активная карточка: ${title}`);
+            };
+
+            // Бесконечная прокрутка
+            cardsWrapper.addEventListener('scroll', () => {
+                if (cardsWrapper.scrollLeft + cardsWrapper.clientWidth >= cardsWrapper.scrollWidth) {
+                    cardsWrapper.scrollLeft = 1; // Возвращаемся к началу
+                } else if (cardsWrapper.scrollLeft === 0) {
+                    cardsWrapper.scrollLeft = cardsWrapper.scrollWidth - cardsWrapper.clientWidth - 1; // Переход к концу
+                }
+                window.requestAnimationFrame(determineActiveCard);
+            });
+
+            // Инициализация активной карточки
+            determineActiveCard();
+
+            // Обработчики кликов на индикаторы для перехода к соответствующим карточкам
+            indicators.forEach(indicator => {
+                indicator.addEventListener('click', () => {
+                    const index = parseInt(indicator.getAttribute('data-index'));
+                    if (!isNaN(index)) {
+                        const card = cards[index % cards.length];
+                        card.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                    }
+                });
+            });
+
+            // Обработчик клика на кнопку
+            actionButton.addEventListener('click', () => {
+                const currentCard = cards[activeIndex % cards.length];
+                const title = currentCard.getAttribute('data-title');
+                // Здесь вы можете добавить логику перехода к настройкам выбранной рутины
+                alert(`Переход к настройкам рутины: ${title}`);
+            });
+        });
+    </script>
+</body>
+</html>
