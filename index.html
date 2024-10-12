@@ -67,6 +67,16 @@
             container.style.transform = `scale(${scale})`;
         }
 
+        function enableHorizontalScrollWithWheel() {
+            const scrollContainer = document.querySelector('.scroll-container');
+            scrollContainer.addEventListener('wheel', function (event) {
+                if (event.deltaY !== 0) {
+                    event.preventDefault();
+                    scrollContainer.scrollLeft += event.deltaY;
+                }
+            });
+        }
+
         // Вызываем функцию при загрузке страницы и изменении размеров окна
         window.addEventListener('load', adjustScale);
         window.addEventListener('resize', adjustScale);
