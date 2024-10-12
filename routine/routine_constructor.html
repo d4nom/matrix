@@ -97,6 +97,15 @@
             font-size: 18px;
         }
 
+        .cards-wrapper {
+            cursor: grab;
+            user-select: none; /* Предотвращает выделение текста */
+        }   
+
+        .cards-wrapper.active {
+            cursor: grabbing;
+        }
+
         /* Контейнер для кнопки */
         .button-container {
             width: 100%;
