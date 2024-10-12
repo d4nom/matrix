@@ -33,7 +33,8 @@
             width: 375px; /* Ширина стандартного мобильного экрана */
             /* Высота будет вычисляться автоматически на основе содержимого */
         }
-
+        
+        
         /* Обертка для карточек */
         .cards-wrapper {
             display: flex;
@@ -44,6 +45,13 @@
             padding: 0 10px;
             margin-top: 20px;
             width: 100%;
+            cursor: grab;
+            user-select: none; /* Предотвращает выделение текста */
+            position: relative;
+        }
+
+        .cards-wrapper.active {
+            cursor: grabbing;
         }
 
         /* Стили для карточек */
@@ -84,6 +92,9 @@
             height: 100%;
             object-fit: cover;
             border-radius: 20px;
+            user-drag: none;
+            -webkit-user-drag: none;
+            draggable: false;
         }
 
         /* Заголовок карточки */
@@ -99,15 +110,6 @@
             font-size: 18px;
         }
 
-        .cards-wrapper {
-            cursor: grab;
-            user-select: none; /* Предотвращает выделение текста */
-        }   
-
-        .cards-wrapper.active {
-            cursor: grabbing;
-        }
-
         /* Контейнер для кнопки */
         .button-container {
             width: 100%;
@@ -117,15 +119,16 @@
 
         /* Стили для кнопки */
         .action-button {
-            background-color: #ff0000;
+            background-color: #a10000;
             color: #ffffff;
             border: none;
             border-radius: 25px;
-            padding: 15px 30px;
+            padding: 20px 30px;
             font-size: 16px;
             cursor: pointer;
             width: 80%;
-            transition: background-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .action-button:hover {
@@ -161,6 +164,24 @@
         .indicator.active {
             background-color: #ff0000;
         }
+
+        /* Плавный переход для текста кнопки */
+        .action-button span {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.7s ease;
+        }
+
+        .action-button span.active {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -175,13 +196,13 @@
             </div>
             <div class="card" data-title="ОПТИМАЛЬНАЯ">
                 <div class="card-content">
-                    <img src="https://d4nom.github.io/matrix/routine/express.png" alt="ОПТИМАЛЬНАЯ" draggable="false">
+                    <img src="https://d4nom.github.io/matrix/routine/optimal.png" alt="ОПТИМАЛЬНАЯ" draggable="false">
                     <div class="card-title">ОПТИМАЛЬНАЯ</div>
                 </div>
             </div>
             <div class="card" data-title="РАСШИРЕННАЯ">
                 <div class="card-content">
-                    <img src="https://d4nom.github.io/matrix/routine/express.png" alt="РАСШИРЕННАЯ" draggable="false">
+                    <img src="https://d4nom.github.io/matrix/routine/extended.png" alt="РАСШИРЕННАЯ" draggable="false">
                     <div class="card-title">РАСШИРЕННАЯ</div>
                 </div>
             </div>
@@ -194,22 +215,45 @@
         </div>
         <!-- Кнопка -->
         <div class="button-container">
-            <button class="action-button" id="actionButton">Начать трансформацию</button>
+            <button class="action-button" id="actionButton">
+                <span class="time-text active">15 минут в день</span>
+                <span class="start-text">Начать трансформацию</span>
+            </button>
         </div>
     </div>
 
     <script>
-
         document.addEventListener('DOMContentLoaded', () => {
             const cardsWrapper = document.getElementById('cardsWrapper');
+            const images = cardsWrapper.querySelectorAll('img');
+            const indicators = document.querySelectorAll('.indicator');
+            const actionButton = document.getElementById('actionButton');
+            const timeText = actionButton.querySelector('.time-text');
+            const startText = actionButton.querySelector('.start-text');
+            const cards = document.querySelectorAll('.card');
+
+            // Маппинг названий карточек к времени
+            const cardTimes = {
+                'ЭКСПРЕСС': 15,
+                'ОПТИМАЛЬНАЯ': 25,
+                'РАСШИРЕННАЯ': 60
+            };
 
             let isDragging = false;
             let startX, scrollLeft;
 
+            // Предотвращаем стандартное поведение dragstart на изображениях
+            images.forEach(img => {
+                img.addEventListener('dragstart', (e) => e.preventDefault());
+            });
+
+            // Предотвращаем выделение текста при перетаскивании
+            cardsWrapper.addEventListener('selectstart', (e) => e.preventDefault());
+
             // Обработчик начала перетаскивания мышью
             cardsWrapper.addEventListener('mousedown', (e) => {
                 isDragging = true;
-                cardsWrapper.classList.add('active');  // Можно добавить стиль во время перетаскивания
+                cardsWrapper.classList.add('active');  // Изменяет курсор
                 startX = e.pageX - cardsWrapper.offsetLeft;
                 scrollLeft = cardsWrapper.scrollLeft;
             });
@@ -229,45 +273,38 @@
                 cardsWrapper.scrollLeft = scrollLeft - walk;
             });
 
-            // Добавьте событие для предотвращения выделения текста при перетаскивании
+            // Обработчик выхода курсора за пределы cardsWrapper
             cardsWrapper.addEventListener('mouseleave', () => {
                 isDragging = false;
+                cardsWrapper.classList.remove('active');
             });
-        });
 
-        // Функция для масштабирования контента
-        function adjustScale() {
-            const container = document.querySelector('.container');
-            const scaleX = window.innerWidth / container.offsetWidth;
-            const scaleY = window.innerHeight / container.offsetHeight;
-            const scale = Math.min(scaleX, scaleY);
-            container.style.transform = `scale(${scale})`;
-        }
+            // Функция для масштабирования контента
+            function adjustScale() {
+                const container = document.querySelector('.container');
+                const scaleX = window.innerWidth / container.offsetWidth;
+                const scaleY = window.innerHeight / container.offsetHeight;
+                const scale = Math.min(scaleX, scaleY);
+                container.style.transform = `scale(${scale})`;
+            }
 
-        // Добавляем обработчики событий
-        window.addEventListener('load', () => {
-            adjustScale();
-            enableHorizontalScrollWithWheel();
-        });
-        window.addEventListener('resize', adjustScale);
-
-        // Функция для горизонтальной прокрутки колесиком мыши
-        function enableHorizontalScrollWithWheel() {
-            const cardsWrapper = document.getElementById('cardsWrapper');
-            cardsWrapper.addEventListener('wheel', function (event) {
-                if (event.deltaY !== 0) {
-                    event.preventDefault();
-                    cardsWrapper.scrollLeft += event.deltaY;
-                }
+            // Добавляем обработчики событий
+            window.addEventListener('load', () => {
+                adjustScale();
+                enableHorizontalScrollWithWheel();
             });
-        }
+            window.addEventListener('resize', adjustScale);
 
-        // Ваш существующий JavaScript код
-        document.addEventListener('DOMContentLoaded', () => {
-            const cardsWrapper = document.getElementById('cardsWrapper');
-            const cards = document.querySelectorAll('.card');
-            const indicators = document.querySelectorAll('.indicator');
-            const actionButton = document.getElementById('actionButton');
+            // Функция для горизонтальной прокрутки колесиком мыши
+            function enableHorizontalScrollWithWheel() {
+                const cardsWrapper = document.getElementById('cardsWrapper');
+                cardsWrapper.addEventListener('wheel', function (event) {
+                    if (event.deltaY !== 0) {
+                        event.preventDefault();
+                        cardsWrapper.scrollLeft += event.deltaY;
+                    }
+                });
+            }
 
             let activeIndex = 0;
 
@@ -311,11 +348,13 @@
             const updateActionButton = (index) => {
                 const currentCard = cards[index];
                 const title = currentCard.getAttribute('data-title');
-                actionButton.textContent = `Начать трансформацию`;
+                const time = cardTimes[title] || 0;
+
+                // Обновляем время в кнопке
+                currentButtonTime = time;
+                resetButtonCycle();
             };
-            
-            
-            
+
             // Обработчики кликов на индикаторы
             indicators.forEach(indicator => {
                 indicator.addEventListener('click', () => {
@@ -331,7 +370,8 @@
             actionButton.addEventListener('click', () => {
                 const currentCard = cards[activeIndex];
                 const title = currentCard.getAttribute('data-title');
-                alert(`Переход к настройкам рутины: ${title}`);
+                const time = cardTimes[title] || 0;
+                alert(`Переход к настройкам рутины: ${title} (${time} минут)`);
             });
 
             // Обработчик прокрутки для определения активной карточки
@@ -343,6 +383,56 @@
 
             // Инициализация
             determineActiveCard();
+
+            // -------------------------------
+            // Новый функционал для кнопки
+            // -------------------------------
+
+            let buttonCycleInterval;
+            let currentButtonTime = cardTimes[cards[activeIndex].getAttribute('data-title')] || 0;
+            let showingTime = true;
+
+            const startButtonCycle = () => {
+                // Начинаем цикл сразу с времени
+                showTimeText();
+
+                buttonCycleInterval = setInterval(() => {
+                    if (showingTime) {
+                        showStartText();
+                    } else {
+                        showTimeText();
+                    }
+                    showingTime = !showingTime;
+                }, 2000); // Интервал 2 секунды между сменами
+            };
+
+            const resetButtonCycle = () => {
+                clearInterval(buttonCycleInterval);
+                showingTime = true;
+                showTimeText();
+                buttonCycleInterval = setInterval(() => {
+                    if (showingTime) {
+                        showStartText();
+                    } else {
+                        showTimeText();
+                    }
+                    showingTime = !showingTime;
+                }, 3000);
+            };
+
+            const showTimeText = () => {
+                timeText.textContent = `${currentButtonTime} минут в день`;
+                timeText.classList.add('active');
+                startText.classList.remove('active');
+            };
+
+            const showStartText = () => {
+                startText.classList.add('active');
+                timeText.classList.remove('active');
+            };
+
+            // Запуск цикла при загрузке страницы
+            startButtonCycle();
         });
     </script>
 </body>
