@@ -232,7 +232,7 @@
                 console.log(`Активная карточка: ${title}`);
             };
 
-            // Обработчики кликов на индикаторы для перехода к соответствующим карточкам
+           // Обработчики кликов на индикаторы для перехода к соответствующим карточкам
             indicators.forEach(indicator => {
                 indicator.addEventListener('click', () => {
                     const index = parseInt(indicator.getAttribute('data-index'));
@@ -242,10 +242,6 @@
                     }
                 });
             });
-
-            // Инициализация активной карточки
-            cards[1].scrollIntoView({ behavior: 'auto'}); // По умолчанию открываем вторую карточку
-            determineActiveCard();
 
             // Обработчик клика на кнопку
             actionButton.addEventListener('click', () => {
