@@ -250,6 +250,16 @@
                 alert(`Переход к настройкам рутины: ${title}`);
             });
 
+            function enableHorizontalScrollWithWheel() {
+            const scrollContainer = document.querySelector('.scroll-container');
+            scrollContainer.addEventListener('wheel', function (event) {
+                if (event.deltaY !== 0) {
+                    event.preventDefault();
+                    scrollContainer.scrollLeft += event.deltaY;
+                }
+            });
+        }
+
             // Обработчик прокрутки для определения активной карточки
             cardsWrapper.addEventListener('scroll', () => {
                 window.requestAnimationFrame(determineActiveCard);
