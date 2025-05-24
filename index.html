@@ -1,90 +1,337 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://d4nom.github.io/matrix/styles.css">
-    <title>Matrix App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>
-        Telegram.WebApp.expand();
-        Telegram.WebApp.setHeaderColor('#000000');
-    </script>
+    <title>Магазин Джерси</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden; /* Скрываем прокрутку */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh; /* Высота равна всей видимой области экрана */
-            width: 100vw; /* Ширина равна всей видимой области экрана */
+            font-family: 'Inter', sans-serif;
+            /* Градиентный фон для эффекта глассморфизма */Й
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed; /* Фон не скроллится */
+            color: #e0e0e0; /* Более светлый основной текст для темного фона */
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1); /* Полупрозрачный белый фон */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); /* Для Safari */
+            border-radius: 1.25rem; /* Еще более скругленные углы */
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+            max-width: 400px; /* Немного уменьшил для лучшего вида на мобильных */
+        }
+        .glass-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
+        }
+        .btn {
+            border-radius: 0.75rem;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            padding: 0.8rem 1.6rem; /* Немного увеличил паддинги */
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .btn-primary {
+            background-color: rgba(79, 70, 229, 0.8); /* Фиолетовый с прозрачностью */
+            color: white;
+            border: 1px solid rgba(79, 70, 229, 0.9);
+        }
+        .btn-primary:hover {
+            background-color: rgba(67, 56, 202, 0.9);
+        }
+        .btn-secondary {
+            background-color: rgba(229, 231, 235, 0.2); /* Светло-серый с прозрачностью */
+            color: #f0f0f0; /* Светлый текст */
+            border: 1px solid rgba(229, 231, 235, 0.3);
+        }
+        .btn-secondary:hover {
+            background-color: rgba(209, 213, 219, 0.3);
+        }
+        .btn-secondary.selected {
+            background-color: rgba(59, 130, 246, 0.7); /* Синий с прозрачностью */
+            color: white;
+            font-weight: 700;
+            border: 1px solid rgba(59, 130, 246, 0.8);
+        }
+        .team-header {
+            font-size: 2rem; /* Увеличил заголовок команды */
+            font-weight: 700;
+            margin-bottom: 2rem; /* Увеличил отступ */
+            text-align: center;
+            color: #ffffff; /* Белый цвет для заголовков */
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .jersey-image {
+            width: 100%;
+            height: 360px; /* Немного скорректировал высоту */
+            object-fit: cover;
+            border-radius: 1rem; /* Скругление для картинки внутри карточки */
+            margin-bottom: 1.25rem;
+            background-color: rgba(255,255,255,0.05);
+        }
+        .price {
+            font-size: 1.625rem; /* 26px */
+            font-weight: 700;
+            color: #a7f3d0; /* Светло-зеленый для цены */
+            margin: 0.75rem 0;
+        }
+        .text-content-card { /* Класс для текстовых элементов внутри карточки */
+            color: #f0f0f0; /* Светлый текст */
+        }
+        .text-content-card-darker {
+             color: #d1d5db; /* Чуть темнее для описаний */
         }
 
-        .container {
-            transform-origin: center; /* Точка масштабирования — центр контейнера */
-            transition: transform 0.3s ease; /* Плавный переход для масштабирования */
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6); /* Более темный фон для модалки */
+            align-items: center;
+            justify-content: center;
         }
+        .modal-content {
+            /* Применяем глассморфизм к модальному окну */
+            background: rgba(31, 41, 55, 0.6); /* Темно-серый полупрозрачный */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin: auto;
+            padding: 2.5rem; /* Увеличил паддинги */
+            border-radius: 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            color: #f0f0f0; /* Светлый текст в модалке */
+        }
+        .modal-title {
+            font-size: 1.75rem; /* 28px */
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        .modal-message {
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .modal-close-btn {
+            background-color: rgba(239, 68, 68, 0.7); /* Красный с прозрачностью */
+            color: white;
+            border: 1px solid rgba(239, 68, 68, 0.8);
+        }
+        .modal-close-btn:hover {
+            background-color: rgba(220, 38, 38, 0.8);
+        }
+        /* Шапка */
+        header {
+            background: rgba(255, 255, 255, 0.05); /* Легкий глассморфизм для шапки */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: white; /* Убедимся, что текст в шапке белый */
+        }
+         /* Подвал */
+        footer {
+            background: rgba(17, 24, 39, 0.5); /* Темный полупрозрачный для подвала */
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            color: #9ca3af; /* Светло-серый текст */
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        footer p {
+            color: #d1d5db; /* Более светлый текст в подвале */
+        }
+        footer .text-sm {
+            color: #9ca3af;
+        }
+
     </style>
 </head>
+<body class="antialiased">
 
-    
-<body>
-    <div class="container">
-        <!-- Карточки и кнопка "Выход из Матрицы" -->
-        <div class="card">
-                <a href="https://d4nom.github.io/matrix/routine/routine_constructor.html">
-            <img src="https://d4nom.github.io/matrix/pic/rutina.png" alt="Конструктор рутины">
-                </a>
+    <header class="p-6 shadow-lg">
+        <div class="container mx-auto text-center">
+            <h1 class="text-3xl md:text-4xl font-bold">Фан-шоп Джерси</h1>
+            <p class="text-sm md:text-base mt-1">Эксклюзивные джерси от КСБ Мурзик и Пивное войско!</p>
         </div>
+    </header>
 
-        <div class="scroll-container">
-            <div class="card">
-                <img src="https://d4nom.github.io/matrix/pic/tracker.png" alt="Трекер привычек">
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="murzik" class="mb-16"> <h2 class="team-header">Джерси "КСБ Мурзик"</h2>
+            <div class="flex justify-center">
+                <div class="glass-card p-6 murzik-item" data-team="КСБ Мурзик" data-item-name="Джерси Мурзик" data-price="2999">
+                    <img src="https://shop.rave-illusion.com/shop-img/murzik5.webp" 
+                         alt="[Изображение джерси КСБ Мурзик]" 
+                         class="jersey-image"
+                         onerror="this.onerror=null; this.src='https://placehold.co/400x360/A5B4FC/312E81?text=Ошибка+Мурзик';">
+                    <h3 class="text-2xl font-semibold mb-2 text-content-card">Джерси "Мурзик"</h3>
+                    <p class="text-content-card-darker mb-3">Эксклюзивная джерси команды "КСБ Мурзик".</p>
+                    <p class="price">2999 ₽</p>
+                    <div class="mb-4">
+                        <p class="font-semibold mb-2 text-content-card">Размер:</p>
+                        <div class="flex space-x-2">
+                            <button class="btn btn-secondary size-btn flex-grow" data-size="M">M</button>
+                            <button class="btn btn-secondary size-btn flex-grow" data-size="L">L</button>
+                            <button class="btn btn-secondary size-btn flex-grow" data-size="XL">XL</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary w-full buy-btn">Купить</button>
+                </div>
             </div>
+        </section>
 
-            <div class="card">
-                <img src="https://d4nom.github.io/matrix/pic/leader.png" alt="Лидеры">
+        <section id="pivvoisko" class="mb-12">
+            <h2 class="team-header">Джерси "Пивное войско"</h2>
+            <div class="flex justify-center">
+                <div class="glass-card p-6 pivvoisko-item" data-team="Пивное войско" data-item-name="Джерси Пивное Войско" data-price="3499">
+                    <img src="https://shop.rave-illusion.com/shop-img/PV1.webp" 
+                         alt="[Изображение джерси Пивное войско]" 
+                         class="jersey-image"
+                         onerror="this.onerror=null; this.src='https://placehold.co/400x360/FDE68A/92400E?text=Ошибка+Войско';">
+                    <h3 class="text-2xl font-semibold mb-2 text-content-card">Джерси "Пивное войско"</h3>
+                    <p class="text-content-card-darker mb-3">Легендарная джерси "Пивного войска".</p>
+                    <p class="price">3499 ₽</p>
+                    <div class="mb-4">
+                        <p class="font-semibold mb-2 text-content-card">Размер:</p>
+                        <div class="flex space-x-2">
+                            <button class="btn btn-secondary size-btn flex-grow" data-size="M">M</button>
+                            <button class="btn btn-secondary size-btn flex-grow" data-size="L">L</button>
+                            <button class="btn btn-secondary size-btn flex-grow" data-size="XL">XL</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary w-full buy-btn">Купить</button>
+                </div>
             </div>
-        </div>
+        </section>
+    </main>
 
-        <div class="exit-button">
-            <img src="https://d4nom.github.io/matrix/pic/exit.png" alt="Выйти из Матрицы">
+    <footer class="p-8 mt-12 text-center">
+        <p>&copy; 2025 Фан-шоп Джерси. Все права защищены.</p>
+        <p class="text-sm">Сделано с ❤️ для фанатов</p>
+    </footer>
+
+    <div id="purchaseModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle" class="modal-title">Отличный выбор!</h3>
+            <p id="modalMessage" class="modal-message">Вы добавили товар в корзину.</p>
+            <button id="closeModalBtn" class="btn modal-close-btn">Закрыть</button>
         </div>
     </div>
 
-    <!-- JavaScript для динамического масштабирования контента и центрирования -->
     <script>
-        function adjustScale() {
-            const container = document.querySelector('.container');
-            const scaleX = window.innerWidth / container.offsetWidth;
-            const scaleY = window.innerHeight / container.offsetHeight;
+        document.addEventListener('DOMContentLoaded', () => {
+            // Инициализация Telegram WebApp
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready();
+                 // Можно настроить кнопку "назад", если это нужно для Mini App
+                // window.Telegram.WebApp.BackButton.show();
+                // window.Telegram.WebApp.BackButton.onClick(() => {
+                //     // Действие по кнопке назад, например, закрыть приложение
+                //     window.Telegram.WebApp.close();
+                // });
+            }
 
-            // Берем минимальный коэффициент, чтобы весь контент умещался по обеим осям
-            const scale = Math.min(scaleX, scaleY);
+            const sizeButtons = document.querySelectorAll('.size-btn');
+            const buyButtons = document.querySelectorAll('.buy-btn');
+            const modal = document.getElementById('purchaseModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
 
-            // Применяем масштабирование к контейнеру
-            container.style.transform = `scale(${scale})`;
-        }
+            sizeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const parentCard = button.closest('.glass-card');
+                    parentCard.querySelectorAll('.size-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    button.classList.add('selected');
+                    parentCard.dataset.selectedSize = button.dataset.size;
+                });
+            });
 
-        function enableHorizontalScrollWithWheel() {
-            const scrollContainer = document.querySelector('.scroll-container');
-            scrollContainer.addEventListener('wheel', function (event) {
-                if (event.deltaY !== 0) {
-                    event.preventDefault();
-                    scrollContainer.scrollLeft += event.deltaY;
+            buyButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const card = button.closest('.glass-card');
+                    const teamName = card.dataset.team;
+                    const itemName = card.dataset.itemName;
+                    const selectedSize = card.dataset.selectedSize;
+                    const itemPrice = card.dataset.price; // Получаем цену из data-атрибута
+
+                    if (!selectedSize) {
+                        modalTitle.textContent = 'Ошибка';
+                        modalMessage.textContent = 'Пожалуйста, выберите размер перед покупкой.';
+                        modal.style.display = 'flex';
+                        return;
+                    }
+
+                    const purchaseData = {
+                        team: teamName,
+                        item: itemName,
+                        size: selectedSize,
+                        price: itemPrice, // Добавляем цену в отправляемые данные
+                        currency: "RUB" // Можно добавить валюту
+                    };
+                    const dataString = JSON.stringify(purchaseData);
+
+                    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.sendData) {
+                        try {
+                            window.Telegram.WebApp.sendData(dataString);
+                            // Опционально: показать сообщение об успехе и/или закрыть приложение
+                            // modalTitle.textContent = 'Отправлено!';
+                            // modalMessage.textContent = `Данные о заказе (${itemName}, ${selectedSize}) отправлены в Telegram.`;
+                            // modal.style.display = 'flex';
+                            // setTimeout(() => window.Telegram.WebApp.close(), 2000); // Закрыть через 2 сек
+                        } catch (e) {
+                            console.error("Ошибка отправки данных в Telegram: ", e);
+                            modalTitle.textContent = 'Ошибка отправки';
+                            modalMessage.textContent = `Не удалось отправить данные в Telegram. Попробуйте позже. ${e.message}`;
+                            modal.style.display = 'flex';
+                        }
+                    } else {
+                        // Режим отладки, если не в Telegram
+                        console.log("Telegram WebApp не найден. Данные для отправки:", dataString);
+                        modalTitle.textContent = 'Заказ оформлен (локально)';
+                        modalMessage.textContent = `Вы выбрали "${itemName}" (${teamName}), размер: ${selectedSize}, цена: ${itemPrice} ₽. Данные готовы к отправке (имитация).`;
+                        modal.style.display = 'flex';
+                    }
+
+                    // Сброс выбора размера
+                    card.querySelectorAll('.size-btn').forEach(btn => {
+                         btn.classList.remove('selected');
+                    });
+                    delete card.dataset.selectedSize;
+                });
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
                 }
             });
-        }
-
-        // Вызываем функции при загрузке страницы и изменении размеров окна
-    window.addEventListener('load', () => {
-        adjustScale();
-        enableHorizontalScrollWithWheel(); // Добавляем вызов функции
-    });
-    window.addEventListener('resize', adjustScale);
+        });
     </script>
+
 </body>
 </html>
